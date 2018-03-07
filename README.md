@@ -1,6 +1,6 @@
 #  Optimal Synthesis of four-bar mechanisms using Evolutionary Centers Algorithm
 
-This works employs ECA for generate optimal four-bar mechanisms.
+This work employs ECA for generating optimal four-bar mechanisms.
 
 ## Requirements
 
