@@ -27,3 +27,6 @@ C, X0, X1, X2, X3 = generateTrayectory(p, nframes)
 # create an animation
 getAnimation(C, X0, X1, X2, X3, nframes, my_error, precision_points)
 ```
+
+
+![Mechanism](https://www.candaana.com/eca/fourbars.gif "Mechanism")
