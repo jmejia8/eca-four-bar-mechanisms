@@ -4,9 +4,9 @@ This works employs ECA for generate optimal four-bar mechanisms.
 
 ## Requirements
 
-* (Julia 0.6)[https://julialang.org/]
-* (Metaheuristics package)[https://github.com/jmejia8/Metaheuristics.jl]
-* (Plots)[https://github.com/JuliaPlots/Plots.jl]
+* [Julia 0.6](https://julialang.org/)
+* [Metaheuristics package](https://github.com/jmejia8/Metaheuristics.jl)
+* [Plots](https://github.com/JuliaPlots/Plots.jl)
 
 ## Example
 
