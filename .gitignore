@@ -1,0 +1,7 @@
+*.csv
+*.gif
+res/
+output/
+*.sublime-workspace
+*.ipynb
+.ipynb_checkpoints/
