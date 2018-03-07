@@ -3,7 +3,7 @@ gr(size=(500, 500), legend=false)
 
 function getAnimation(C, X0, X1, X2, X3, nframes, my_error, precision_points)
     @gif for t = 1:nframes
-        plot(xlimits=(-60, 60), ylimits=(-100, 100), title=@sprintf("Error: %e", my_error))
+        plot(title=@sprintf("Error: %e", my_error))
         scatter!(precision_points[:,1], precision_points[:,2])
         plot!(C[:,1], C[:,2], linestyle=:dot, linecolor=:green)
         

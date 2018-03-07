@@ -292,7 +292,7 @@ end
 
 function generateTrayectory(p, nframes=25)
     # Save mechanism dynamics 
-    r1,r2,r3,r4,rcx,rcy,θ0,x0,y0,θ21,θ22,θ23,θ24,θ25,θ26 = p
+    r1,r2,r3,r4,rcx,rcy,θ0,x0,y0 = p
     θ1 = 0
 
     X0 = zeros(nframes, 2)
@@ -308,7 +308,7 @@ function generateTrayectory(p, nframes=25)
 
         A1 = 2p[3] * (p[2] * cos(θ2) - p[1]*cos(θ1))
         B1 = 2p[3] * (p[2] * sin(θ2) - p[1]*sin(θ1))
-        C1 = p[1]^2+p[2]^2+p[3]^2-p[4]^2- 2p[1]*p[2]*cos(θ2 - 0)
+        C1 = p[1]^2+p[2]^2+p[3]^2-p[4]^2- 2p[1]*p[2]*cos(θ2 - θ1)
 
         θ3 = 2atan((-B1+sqrt(B1^2+A1^2-C1^2))/(C1-A1))
 
