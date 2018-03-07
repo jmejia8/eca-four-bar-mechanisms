@@ -14,7 +14,7 @@ function grashof(p)
 
 end
 
-function secuencia(KC)
+function secuencia(KC, n=6)
     # Esta función evalua la secuencia de los angulos de la manivela
     # del mecanismo de cuatro barras. Verifica que dicha secuencia sea ascendente.
     # El valor que regresa la funcion es cero si dicha secuencia es valida y
@@ -34,7 +34,7 @@ function secuencia(KC)
     offset = KC[1];
 
     #Se comienza a generar el nuevo vector.
-    nvector = zeros(6)
+    nvector = zeros(n)
     nvector[1]=0;
 
     # Se determina donde comienza la secuencia y se recorren los demas
@@ -55,25 +55,31 @@ function secuencia(KC)
     end
               
     # Se verifica que se cumpla la ascendencia de la nueva secuencia.
-    if nvector[1]-nvector[2]>=0
-        contx=contx+(nvector[1]-nvector[2])
+    contx = 0
+    for i=1 : n-1
+        if nvector[i] - nvector[i+1]>=0
+            contx += (nvector[i] - nvector[i+1]);
+        end
     end
-    if nvector[2]-nvector[3]>=0
-        contx=contx+(nvector[2]-nvector[3])
-    end
-    if nvector[3]-nvector[4]>=0
-        contx=contx+(nvector[3]-nvector[4])
-    end
-    if nvector[4]-nvector[5]>=0
-        contx=contx+(nvector[4]-nvector[5])
-    end
-    if nvector[5]-nvector[6]>=0
-        contx=contx+(nvector[5]-nvector[6])
-    end
+    # if nvector[1]-nvector[2]>=0
+    #     contx=contx+(nvector[1]-nvector[2])
+    # end
+    # if nvector[2]-nvector[3]>=0
+    #     contx=contx+(nvector[2]-nvector[3])
+    # end
+    # if nvector[3]-nvector[4]>=0
+    #     contx=contx+(nvector[3]-nvector[4])
+    # end
+    # if nvector[4]-nvector[5]>=0
+    #     contx=contx+(nvector[4]-nvector[5])
+    # end
+    # if nvector[5]-nvector[6]>=0
+    #     contx=contx+(nvector[5]-nvector[6])
+    # end
 
     # Se verifica que el ultimo valor no sobrepase al primer valor de la
     # secuencia original.
-    if nvector[6] >= 2π 
+    if nvector[n] >= 2π 
         contx += 2π ;
     end
         
@@ -168,9 +174,11 @@ function error_caso1(p,ctr,punpres)
     θ1=0;
     D=9;
 
+    npoints = size(punpres, 1)
+
     tmp = zeros(5)
     tmp[1:4] = ctr
-    tmp[5]   = secuencia(p[10:15])
+    tmp[5]   = secuencia(p[10:10+npoints-1])
     ctr = tmp
 
     #Esta es la variable donde se almacenan las violaciones de las restricciones
@@ -202,7 +210,7 @@ function error_caso1(p,ctr,punpres)
 
     if contx == 0
         my_error = 0
-        for i=1:6
+        for i=1:npoints
             A1 = 2p[3] * (p[2] * cos(p[D+i]) - p[1]*cos(θ1))
             B1 = 2p[3] * (p[2] * sin(p[D+i]) - p[1]*sin(θ1))
             C1 = p[1]^2+p[2]^2+p[3]^2-p[4]^2- 2p[1]*p[2]*cos(p[D+i]-θ1)
@@ -232,6 +240,13 @@ function error_caso1(p,ctr,punpres)
 
     return my_error, sumr
 
+end
+
+function error_caso3(p,ctr,punpres1, punpres2)
+    my_error1, sum1 = error_caso1(p, ctr, punpres1)
+    my_error2, sum2 = error_caso1(p, ctr, punpres2)
+
+    return my_error1 + my_error2, sum1 + sum2
 end
 
 function case_info(ncase)
@@ -284,6 +299,59 @@ function case_info(ncase)
         ]
 
         error_func = error_caso2
+    else
+        BOUNDS = [
+            0 60;
+            0 60;
+            0 60;
+            0 60;
+          -60 60;
+          -60 60;
+            0 2*pi;
+          -60 60;
+          -60 60;
+            0 2*pi;
+            0 2*pi;
+            0 2*pi;
+            0 2*pi;
+            0 2*pi;
+            0 2*pi;
+            0 2*pi;
+            0 2*pi;
+            0 2*pi;
+            0 2*pi
+        ]'
+
+        PRECISION_POINTS1 = [
+            1.768 2.3311;
+            1.947 2.6271;
+            1.595 2.7951;
+            1.019 2.7241;
+            0.479 2.4281;
+            0.126 2.0521;
+           -0.001 1.720;
+            0.103 1.514;
+            0.442 1.549;
+            1.055 1.905
+        ]
+
+        PRECISION_POINTS2 = [
+           1.9592 2.44973;
+            2.168 2.675;
+            1.821 2.804;
+            1.244 2.720;
+            0.705 2.437;
+            0.346 2.104;
+            0.195 1.833;
+            0.356 1.680;
+            0.558 1.742;
+            1.186 2.088
+        ]
+
+        f(p, ctr, punpres) = error_caso3(p,ctr, PRECISION_POINTS1, PRECISION_POINTS2)
+        error_func = f
+        PRECISION_POINTS = [PRECISION_POINTS1; PRECISION_POINTS2]
+
     end
 
     D = size(BOUNDS,2)
