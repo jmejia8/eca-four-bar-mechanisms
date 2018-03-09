@@ -61,21 +61,6 @@ function secuencia(KC, n=6)
             contx += (nvector[i] - nvector[i+1]);
         end
     end
-    # if nvector[1]-nvector[2]>=0
-    #     contx=contx+(nvector[1]-nvector[2])
-    # end
-    # if nvector[2]-nvector[3]>=0
-    #     contx=contx+(nvector[2]-nvector[3])
-    # end
-    # if nvector[3]-nvector[4]>=0
-    #     contx=contx+(nvector[3]-nvector[4])
-    # end
-    # if nvector[4]-nvector[5]>=0
-    #     contx=contx+(nvector[4]-nvector[5])
-    # end
-    # if nvector[5]-nvector[6]>=0
-    #     contx=contx+(nvector[5]-nvector[6])
-    # end
 
     # Se verifica que el ultimo valor no sobrepase al primer valor de la
     # secuencia original.
