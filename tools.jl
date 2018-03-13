@@ -200,7 +200,14 @@ function error_caso1(p,ctr,punpres)
             B1 = 2p[3] * (p[2] * sin(p[D+i]) - p[1]*sin(θ1))
             C1 = p[1]^2+p[2]^2+p[3]^2-p[4]^2- 2p[1]*p[2]*cos(p[D+i]-θ1)
             
-            θ3 = 2atan((-B1+sqrt(B1^2+A1^2-C1^2))/(C1-A1))
+            Dis = B1^2+A1^2-C1^2
+
+            if Dis < 0
+                my_error = 1000
+                continue
+            end
+
+            θ3 = 2atan((-B1+sqrt(Dis))/(C1-A1))
             
             Cxr = p[2]*cos(p[D+i])+p[5]*cos(θ3)-p[6]*sin(θ3)
             Cyr = p[2]*sin(p[D+i])+p[5]*sin(θ3)+p[6]*cos(θ3)
