@@ -29,4 +29,9 @@ getAnimation(C, X0, X1, X2, X3, nframes, my_error, precision_points)
 ```
 
 
-![Mechanism](https://www.candaana.com/eca/fourbars.gif "Mechanism")
+## Study Case 1
+![Mechanism](https://www.candaana.com/eca/case1.gif "Mechanism")
+## Study Case 2
+![Mechanism 2](https://www.candaana.com/eca/case2.gif "Mechanism 2")
+## Study Case 3
+![Mechanis 2m](https://www.candaana.com/eca/case3.gif "Mechanism 2")
