@@ -12,20 +12,20 @@ This work employs ECA for generating optimal four-bar mechanisms.
 
 ```julia
 include("findStructure.jl")
-include("animation.jl")
 
-ncase   = 1
-nframes = 50
-# case information
-D, bounds, precision_points, error_func = case_info(ncase)
+ncase = 3
 
-# solution
-p, my_error = findStructure(ncase)
+println("Optimize...")
+p, er, precisionpts = findStructure(ncase)
 
-C, X0, X1, X2, X3 = generateTrayectory(p, nframes)
 
-# create an animation
-getAnimation(C, X0, X1, X2, X3, nframes, my_error, precision_points)
+println("Generate animation...")
+img = animateFourBarMechanism(p;
+                precision_points=precisionpts,
+                title   = @sprintf("Error: %e", er),
+                xlimits = (-5, 5),
+                ylimits = (-5, 5)
+                )
 ```
 
 
