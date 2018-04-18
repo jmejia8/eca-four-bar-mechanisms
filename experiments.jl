@@ -43,20 +43,14 @@ function funcError(p, ctr, punpres, distr)
         θ2 = 0
 
         if Q != 0
-        	distr2 = p[10]*getDist(punpres, Q)
+        	distr2 = p[10]*(distr)
         else
         	distr2 = linspace(0, p[10], N_points) 
         end
 
         distr2 *= sign(p[end])
         
-        for  s = distr2#θ2 = linspace(0, p[10], N_points) 
-
-
-
-        	if Q == 0
-        	    θ2 = s
-        	end
+        for  θ2 = distr2
 
             A1= 2p[3] * (p[2] * cos(θ2)-p[1] * cos(θ1))
             B1= 2p[3] * (p[2] * sin(θ2)-p[1] * sin(θ1))
@@ -80,31 +74,14 @@ function funcError(p, ctr, punpres, distr)
             
             X[i, 1] = Cx
             X[i, 2] = Cy
-            my_error+= (punpres[i, 1] - Cx)^2 + (punpres[i, 2]-Cy) ^ 2
+            my_error+= norm(X[i,:] - punpres[i,:]) #(punpres[i, 1] - Cx)^2 + (punpres[i, 2]-Cy) ^ 2
 
             i += 1
-            if Q != 0
-            	θ2 += s
-        	end
         end
 
-        # println(size(X))
-        # println(size(punpres))
-        if !flag
-        	my_error = sqrt(my_error)
-        end
-        # if !flag
-        	# my_error = 0
+        # my_error += hausdorffDistance(X, punpres)
 
-        	# for i = 1:N_points	
-        	# 	my_error += norm(X[i,:] - punpres[i,:])
-        	# end
-        	# mean(sqrt.(sum((X - punpres).^2,2)))
-        	# my_error -= maximum(sum((X - punpres).^2, 2))
-        	# my_error = sum(abs.(X - punpres))
 
-        	# my_error /=2
-        # end
         
 
         
@@ -129,11 +106,13 @@ function getDist(Pts,q=2)
 	n = size(Pts, 1)
 
 	ds = zeros(n)
-	for i = 1:n-1
-		ds[i] = norm( Pts[i,:]- Pts[i+1,:],q)
+	ds[1] = norm( Pts[1,:]- Pts[2,:],q)
+	
+	for i = 2:n-1
+		ds[i] = ds[i-1]+ norm( Pts[i,:]- Pts[i+1,:],q)
 	end
 
-	ds /= sum(ds)
+	ds /= maximum(ds)
 
 	return ds
 end
@@ -142,12 +121,11 @@ function distanceMatrix(X, Y)
     Nx = size(X,1)
     Ny = size(Y,1)
 
-    D = zeros(Ny, Nx)
+    D = zeros(Nx, Ny)
 
-    for i = 1:Ny
-        for j = (i+1):Nx
-            D[i, j] = norm((X[j,:]- Y[i,:]))
-            D[j, i] = D[i, j]
+    for i = 1:Nx
+        for j = 1:Ny
+            D[i, j] = sum((X[i,:]- Y[j,:]) .^ 2)
         end
     end
 
@@ -155,31 +133,12 @@ function distanceMatrix(X, Y)
 end
 
 function hausdorffDistance(X, Y)
-    Nx = size(X, 1)
-    Ny = size(Y, 1)
     D = distanceMatrix(X, Y)
 
-    h(X, Y, D) = begin
-        hh = 0.0
-        for i = 1:Ny
-            shortest = Inf
-            for j = 1:Nx
-                if D[i, j] < shortest
-                    shortest = D[i, j]
-                end
-            end
+    h(D) = maximum( minimum(D, 1) )
 
-            if shortest > hh
-                hh = shortest
-            end
-        end
+    return max(h(D), h(D'))
 
-        return hh
-
-    end
-
-
-    return max(h(X, Y, D), h(Y, X, D'))
 
 end
 
@@ -196,7 +155,7 @@ function experimentsInfo(ncase, npts)
         -60 60;
         -60 60;
          0 2π;
-         0 20;
+         -10 10;
          -1 1;
         ]'
 	D = size(bounds,2)
@@ -235,7 +194,7 @@ function findStructure(ncase, npts=50)
     x, f = eca(fitness, D; saveLast = "last.csv",
                            saveConvergence = "conv.csv",
                            max_evals=20000D,
-                           N = 200,
+                           # N = 200,
                            # η_max=4,
                            limits=bounds)
 

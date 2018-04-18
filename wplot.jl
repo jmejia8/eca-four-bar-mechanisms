@@ -5,9 +5,9 @@ function readStructure(ncase)
     D, bounds, precision_points, error_func = case_info(ncase)
 
     # read saved cases (last generation of mechanism)
-    if ncase == 1
+    if ncase == -1
         data = readcsv("output/case1_best.csv")
-    elseif ncase == 3
+    elseif ncase == -3
         data = readcsv("output/case3_best.csv")
     else
         return findStructure(ncase)
@@ -24,8 +24,46 @@ function readStructure(ncase)
     return data[best,:], errs[best]
 end
 
+function plotConvergence()
+    figure(figsize=(16, 4), dpi=80)
+
+    fname = "output/conv_median_case1_final.csv"
+    case1 = readcsv(fname)
+
+    fname = "output/conv_median_case2_final.csv"
+    case2 = readcsv(fname)
+
+    fname = "output/conv_median_case3_final.csv"
+    case3 = readcsv(fname)
+
+    subplot(1,3,1)
+    title("Study Case 1")
+    plot(case1[:,1], log.(1+case1[:,2]), "k", lw=2)
+    xlabel("Evaluations")
+    ylabel("Log Error")
+    grid("on")
+
+    subplot(1,3,2)
+    title("Study Case 2")
+    plot(case2[:,1], log.(1+case2[:,2]), "k", lw=2)
+    xlabel("Evaluations")
+    ylabel("Log Error")
+    xlim([0,60000])
+    grid("on")
+
+    subplot(1,3,3)
+    title("Study Case 3")
+    plot(case3[:,1], log.(1+case3[:,2]), "k", lw=2)
+    xlabel("Evaluations")
+    ylabel("Log Error")
+    xlim([0,380000])
+    grid("on")
+end
+
+# plotConvergence()
+
 function wplot()
-    ncase   = 3
+    ncase   = 1
     nframes = 50
     
     # case information
@@ -33,6 +71,7 @@ function wplot()
 
     # get optimal mechanism
     p, my_error = readStructure(ncase)
+    println(p)
 
 
     C, X0, X1, X2, X3 = generateTrayectory(p, nframes)

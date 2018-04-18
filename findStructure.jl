@@ -1,32 +1,78 @@
 using Metaheuristics
-include("tools.jl")
-
-
-function myerror(x, error_func, precision_points)
-    f, g = error_func(x, grashof(x), precision_points)
-
-    return f + 1000g
-end
+using Mechanisms
 
 function findStructure(ncase)
-    # case information
-    D, bounds, precision_points, error_func = case_info(ncase)
+    if ncase == 1
+        precisionpts = PTS_VERTICAL_LINE
 
-    # fitness
-    fitness(x) = myerror(x, error_func, precision_points)
-    
-    # optimize
-    x, f = eca(fitness, D; saveLast = "last.csv",
-                           saveConvergence = "conv.csv",
-                           max_evals=20000D,
-                           limits=bounds)
+        D, f, g = getOptimizationProblem(precisionpts)
 
-    if ncase == 2
-        p = zeros(9)
-        p[1:6] = x
-        x = p
+        bounds =
+            [ 0 60;
+              0 60;
+              0 60;
+              0 60;
+            -60 60;
+            -60 60.0;
+              0 2π;
+            -60 60;
+            -60 60;
+             repmat([0 2π], size(precisionpts, 1))
+            ]'
+
+        K = 7; N = K*D; η_max = 2
+    elseif ncase == 2
+        precisionpts = PTS_ELLIPTIC
+
+        # synchronization
+        X0 = [0,0.0,0]
+        θ2 = [π/6, π/4, π/3, 10π/24, π/2]
+        D, f, g = getOptimizationProblem(precisionpts, X0, θ2)
+
+        bounds =
+            [ 0 60;
+              0 60;
+              0 60;
+              0 60;
+            -60 60;
+            -60 60.0;
+            ]'
+
+        K = 7; N = K*D; η_max = 2
+    else
+
+        D, f, g = getOptimizationProblem(PTS_PAIR_1, PTS_PAIR_2)
+        precisionpts = PTS_PAIR_1
+
+        bounds =
+            [ 0 60;
+              0 60;
+              0 60;
+              0 60;
+            -60 60;
+            -60 60.0;
+              0 2π;
+            -60 60;
+            -60 60;
+             repmat([0 2π], size(precisionpts, 1))
+            ]'
+
+        precisionpts = [PTS_PAIR_1 ; PTS_PAIR_2]
+        K = 7; N = K*D; η_max = 2
     end
 
-    return x, f
+    objFunction(p, α = 1000.0) = f(p) + α*sum(g(p))
+    
+    p, err = eca(objFunction, D;
+                    η_max = η_max,
+                    K     = K,
+                    N     = N,
+                    limits= bounds,
+                    p_bin= 0.03,
+                    max_evals=20000D)
+    if sum(g(p)) > 0
+        warn("No feasible.")
+    end
 
+    p, err, precisionpts
 end

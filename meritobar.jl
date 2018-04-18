@@ -133,6 +133,52 @@ function mod4b(x::Vector{Float64},t::Float64, K::Vector{Float64})
     return [θ2p, x2_p, x3_p, myerror, xref, x6_p]
 end
 
+function modelovolt(Kss)
+    #Programa para simular el modelo dinamico de un mecanismo de cuatro barras.
+    #Edgar Alfredo Portilla Flores
+    #15 de junio de 2012
+
+    ###################################################################
+    # Declaracion de los valores de los parámetros del mecanismo
+    ###################################################################
+    #tiempo de simulacion y paro del algoritmo.
+    t0 = 0.0
+    tf = 2.0
+    h  = 0.01
+    TSPAN = (t0, tf)
+    #condiciones iniciales de las variables de estado del sistema    
+    θ2  = 0.0
+    θ2p = 0.0
+    x30 = 0.0 # DC motor
+    x40 = 0.0 # ∫error
+    x50 = 0.0 # ∫v (desired)
+    x60 = 0.0 # ∫I^2
+
+    # initial conditions
+    x0 = [θ2, θ2p, x30, x40, x50, x60]
+
+    KC = Kss
+
+    t, x = myode45(mod4b,TSPAN,x0,KC)  #Solucion del sistema dinamico
+
+    R = 0.4
+    L = 0.05
+    Kb = 0.678
+    n = 1.0
+    #x3_p(1) = 0
+    tam = length(t)
+ 
+    x3_p = zeros(tam)
+    u    = zeros(tam)
+    
+    for i = 1:tam
+       u[i] = L*x3_p[i]+R*x[i, 3]+n*Kb*x[i, 2]
+       #x3_p(i)=(1/L)*(u(i)-n*Kb*x(i,2)-R*x(i,3));
+    end
+
+    return t, u, x[:,2]
+
+end
 function merito1(KC::Vector{Float64}, onlydelta::Bool=false)
     #Esta función evalua la funcion de variacion de la velocidad de entrada
     #al mecanismo de cuatro barras.
@@ -220,3 +266,14 @@ function merito1(KC::Vector{Float64}, onlydelta::Bool=false)
     #Eso es todo...
 
 end
+
+# Optimum tuning:      0.11534660226691074
+# K = [99.9917, 24.1412, 2.56832]
+# Trial and error tuning   0.26637851788328604
+# K = [45.55, 5.25, 1.0]
+
+
+#Optimum tuning:     0.23001787820370012
+# K = [49.7738, 12.692, 0.852548]
+# Trial and error tuning   0.26637851788328604
+# K = [45.55, 5.25, 1.0]

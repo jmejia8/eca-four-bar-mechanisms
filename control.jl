@@ -17,9 +17,29 @@ function getKC(bounds::Vector{Float64} = [0.1, 50])
     # optimize using ECA
     K, F = eca(objFunc, D;
                    limits = bounds,
-                 saveLast = "gen.csv",
-                 showIter = false,
-                max_evals = 5000)
+                 saveLast = "last_control.csv",
+                 saveConvergence = "conv_control.csv",
+                 # showIter = false,
+                 # p_bin = 0.03,
+                 η_max=4,
+                 K = 3,
+                 N = 10,
+                 # N = 40,
+                max_evals = 10000)
+
+    # K, F = diffEvolution(objFunc, D;
+    #                limits = bounds,
+    #                N = 100,
+    #              # saveLast = "gen.csv",
+    #              # showIter = false,
+    #              # p_bin = 0.03,
+    #              CR_min = 0.8,
+    #             CR_max = 1,
+    #             F_min  = 0.3,
+    #             F_max  = 0.9,
+    #             individual = Metaheuristics.xfg_indiv,
+    #             # showResults=false,
+    #             max_evals = 100*200)
 
     return K, F
 end
@@ -45,5 +65,8 @@ function getθ(KC)
 end
 
 # statistics (ECA)
-#   minimum         mean             median         maximum          std
-# 2.149911e-01   2.307464e-01    2.340816e-01    2.345938e-01    6.313997e-03
+#   minimum         median             mean         maximum          std
+# ECA
+# 2.055877e-01   2.340816e-01    2.292241e-01    2.345938e-01    9.315045e-03
+# ED
+# 2.120037e-01   2.232873e-01    2.206308e-01    2.340816e-01    8.093537e-03

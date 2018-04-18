@@ -142,7 +142,7 @@ function getTrayectory(ncase, npts = 50)
 	    5.8597    1.5407
 			    ]
 
-		return 4p-.- mean(4p, 1)
+		return 4p .- mean(4p, 1)
 	elseif ncase == 10
 		p = [  -5.0905    6.4244;
 			   -5.1810    5.1453;
@@ -220,7 +220,7 @@ function getTrayectory(ncase, npts = 50)
 			19.33643289	22.5634014;
 			26.18710764	22.50893717;
 			42.00886037	18.08348493;
-			# 64.74204103	16.06501848
+			64.74204103	16.06501848
 			    ]
 
 		return p .- mean(p, 1)
